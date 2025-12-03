@@ -165,9 +165,9 @@ resource "aws_db_instance" "my_db_instance" {
   engine               = "postgres"
   engine_version       = "17.4"
   instance_class       = "db.t3.micro"
-  db_name              = "dbdatabase"
-  username             = "admin"
-  password             = "password"
+  db_name              = "grocerymate_db"
+  username             = "grocery_user"
+  password             = "12345"
   skip_final_snapshot  = true
   publicly_accessible = false
   db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
