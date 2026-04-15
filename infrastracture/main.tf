@@ -93,12 +93,49 @@ resource "aws_security_group" "adewale_sg_for_ec2" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 }
+#Creatioon of iam ec2 role
+resource "aws_iam_role" "adewale_iam_role" {
+  name = "adewale-ec2-role"
 
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name    = "adewale-ec2-role"
+  }
+}
+
+#Attach S3 Full Access Policy to our iam role
+resource "aws_iam_role_policy_attachment" "s3_full_access" {
+  role       = aws_iam_role.adewale_iam_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+#IAM Instance Profile for my IAM ROLE
+resource "aws_iam_instance_profile" "adewale_iam_instance_profile" {
+  name = "adewale aws_iam_instance_profile-ec2"
+  role = aws_iam_role.adewale_iam_role.name
+
+  tags = {
+    Name    ="terraform_instance_profile"
+
+  }
+}
 resource "aws_instance" "adewale-ec2" {
     ami = "ami-0f50f13aefb6c0a5d"
     instance_type = "t3.micro"
     subnet_id = aws_subnet.public_subnet.id
     associate_public_ip_address = true
+    iam_instance_profile = aws_iam_instance_profile.adewale_iam_instance_profile.name
     tags = {
         Name = "terraform_adewale_EC2-for-RDS"
     }
