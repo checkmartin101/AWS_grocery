@@ -141,8 +141,32 @@ resource "aws_instance" "adewale-ec2" {
     }
     vpc_security_group_ids = [ aws_security_group.adewale_sg_for_ec2.id ]
 }
-
-
+# -----------------------
+# MY SNS Topic 
+# -----------------------
+resource "aws_sns_topic" “my_topic {
+  name = "app-alerts"
+}
+resource "aws_sns_topic_subscription" "email_sub" {
+  topic_arn = aws_sns_topic.my_topic.arn
+  protocol  = "email"
+  endpoint  = var.my_email
+}
+# -----------------------
+# CloudWatch Alarm (EC2 CPU)
+# -----------------------
+resource "aws_cloudwatch_metric_alarm" “ec2_cpu” {
+  comparison_operator = "GreaterThanThreshold"
+  metric_name               = "CPUUtilization"
+  namespace                 = "AWS/EC2"
+  period                    = "60" #seconds
+  statistic                 = "Average"
+  threshold                 = "80"
+  dimensions = {
+    InstanceId = aws_instance.adewale-ec2.id
+  }
+  alarm_actions = [aws_sns_topic.my_topic.arn]
+}
 resource "aws_subnet" "private_subnet_1" {
   vpc_id     = aws_vpc.adewale_vpc.id
   cidr_block = "10.0.2.0/24"
