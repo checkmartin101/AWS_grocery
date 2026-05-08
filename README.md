@@ -12,163 +12,198 @@
 
 ---
 
-## 📌 Table of Contents
+## Overview
+GroceryMate is a full stack application deployed
+on Amazon Web Services.
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Screenshots & Demo](#-screenshots--demo)
-- [Prerequisites](#-prerequisites)
-- [Installation](#-installation)
-  - [Clone Repository](#-clone-repository)
-  - [Configure PostgreSQL](#-configure-postgresql)
-  - [Populate Database](#-populate-database)
-  - [Set Up Python Environment](#-set-up-python-environment)
-  - [Set Environment Variables](#-set-environment-variables)
-  - [Start the Application](#-start-the-application)
-- [Usage](#-usage)
-- [Contributing](#-contributing)
-- [License](#-license)
+### Frontend
 
-## 🚀 Overview
+Frontend is the part of an application that users interact with directly.
+Our project is using React library for smooth user interaction.
 
-GroceryMate is an application developed as part of the Masterschools program by **Alejandro Roman Ibanez**. It is a modern, full-featured e-commerce platform designed for seamless online grocery shopping. It provides an intuitive user interface and a secure backend, allowing users to browse products, manage their shopping basket, and complete purchases efficiently.
+### Backend
 
-GroceryMate is a modern, full-featured e-commerce platform designed for seamless online grocery shopping. It provides an intuitive user interface and a secure backend, allowing users to browse products, manage their shopping basket, and complete purchases efficiently.
+The backend handles the application logic, data processing, 
+and communication with the database, 
+We are using Flask framework
 
-## 🛒 Features
+### Database
 
-- **🛡️ User Authentication**: Secure registration, login, and session management.
-- **🔒 Protected Routes**: Access control for authenticated users.
-- **🔎 Product Search & Filtering**: Browse products, apply filters, and sort by category or price.
-- **⭐ Favorites Management**: Save preferred products.
-- **🛍️ Shopping Basket**: Add, view, modify, and remove items.
-- **💳 Checkout Process**:
-  - Secure billing and shipping information handling.
-  - Multiple payment options.
-  - Automatic total price calculation.
+Our database is responsible for storing and
+managing application data, and 
+we are using PostgreSQL as our relational database system.
 
-## 📸 Screenshots & Demo
 
-![imagen](https://github.com/user-attachments/assets/ea039195-67a2-4bf2-9613-2ee1e666231a)
-![imagen](https://github.com/user-attachments/assets/a87e5c50-5a9e-45b8-ad16-2dbff41acd00)
-![imagen](https://github.com/user-attachments/assets/589aae62-67ef-4496-bd3b-772cd32ca386)
-![imagen](https://github.com/user-attachments/assets/2772b85e-81f7-446a-9296-4fdc2b652cb7)
 
-https://github.com/user-attachments/assets/d1c5c8e4-5b16-486a-b709-4cf6e6cce6bc
+## Architecture Diagram
+![Project Diagram](assets/image.webp)
 
-## 📋 Prerequisites
+## Infrastructure Components
+These are the AWS resources that we are using for our architecture
 
-Ensure the following dependencies are installed before running the application:
 
-- **🐍 Python (>=3.11)**
-- **🐘 PostgreSQL** – Database for storing product and user information.
-- **🛠️ Git** – Version control system.
+| Services       | Description                                                                                                                                                 |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| EC2            | Virtual servers that gives full control to host backend apps,websites,or software just like a real server.                                                  |
+| VPC            | Lets you create a private, isolated network within AWS where you can launch and control resources with your own IP ranges, subnets, and security settings.  |
+| RDS            |Is a managed cloud database service that makes it easier to set up, operate, and scale relational databases without handling server maintenance yourself. 
+| S3             |Its a cloud storage service used to store files like images, videos, backups, and static websites. It is highly scalable, secure and cost-effective.                                   
+| Security Group | Security Groups as a firewall to control traffic to and from resources (like EC2). It allows only specific parts, IPs, or services for security.              
+| Route Tables   | Let you control how network traffic flows inside a VPC.                        
+| IAM            | It securely grant permissions to AWS services. Instead of using passwords, services like EC2 can access S3 or RDS safely using roles.                        
+| IGW            | Internet gateway is a networking component that allows communication between VPC and the public internet.
 
-## ⚙️ Installation
 
-### 🔹 Clone Repository
 
-```sh
-git clone --branch version2 https://github.com/AlejandroRomanIbanez/AWS_grocery.git && cd AWS_grocery
+
+
+
+## Terraform
+Terraform is used to automate and manage your infrastructure (like AWS resources) using code instead of manual setup.
+
+Key reasons to use Terraform:
+
+Automation & Speed, with terraform you can create or update your entire infrastructure in minutes with one command.
+
+Consistency
+Same configuration = same infrastructure every time (no human errors).
+
+Version Control
+    
+It can store your infrastructure code in Git and track changes.
+Multi-cloud support
+Works with AWS, Azure, Google Cloud, etc.
+
+
+Common Terraform Commands
+
+Here are the main commands i use:
+
+1. Initialize Terraform
+
+```console
+ terraform init 
 ```
 
-### 🔹 Configure PostgreSQL
+Downloads required plugins (like AWS provider)
 
-Before creating the database user, you can choose a custom username and password to enhance security. Replace `<your_secure_password>` with a strong password of your choice in the following commands.
+2. Format Code
 
-Create database and user:
-
-```sh
-psql -U postgres -c "CREATE DATABASE grocerymate_db;"
-psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_secure_password>';"  # Replace <your_secure_password> with a strong password of your choice
-psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
+```console
+ terraform fmt
 ```
 
-### 🔹 Populate Database
+Cleans and formats your code properly
 
-```sh
-psql -U grocery_user -d grocerymate_db -f backend/app/sqlite_dump_clean.sql
+3. Validate Configuration
+
+```console
+ terraform validate
 ```
 
-Verify insertion:
+Checks if your code is correct (no syntax errors)
 
-```sh
-psql -U grocery_user -d grocerymate_db -c "SELECT * FROM users;"
-psql -U grocery_user -d grocerymate_db -c "SELECT * FROM products;"
+4. Plan Changes
+
+```console
+ terraform plan
 ```
 
-### 🔹 Set Up Python Environment
+Shows what Terraform will create, update, or delete before applying
 
+5. Apply Configuration
 
-Install dependencies in an activated virtual Enviroment:
-
-```sh
-cd backend
-pip install -r requirements.txt
-```
-OR (if pip doesn't exist)
-```sh
-pip3 install -r requirements.txt
+```console
+ terraform apply
 ```
 
-### 🔹 Set Environment Variables
+Actually creates or updates your infrastructure
 
-Create a `.env` file:
+6. Destroy Infrastructure
 
-```sh
-touch .env  # macOS/Linux
-ni .env -Force  # Windows
+```console
+ terraform destroy
 ```
 
-Generate a secure JWT key:
+Deletes all resources created by Terraform
 
-```sh
-python3 -c "import secrets; print(secrets.token_hex(32))"
+
+7. Show Current State
+
+```console
+ terraform show
 ```
 
-Update `.env`:
+Displays current infrastructure
 
-```sh
-nano .env
+
+## Docker
+
+Docker is a platform that lets you package an application and all its dependencies into a container, so it can run the same way on any computer or server.
+
+
+Simple Explanation
+Docker solves the problem of:
+"It works on my machine, but not on another one."
+
+With Docker, your app runs exactly the same everywhere on your laptop, a server, or in the cloud.
+
+
+What is a Container?
+
+A container is a lightweight package that includes:
+Your application code
+Required libraries
+System tools
+Runtime environment
+Everything needed to run the app is inside the container.
+
+Why Use Docker?
+
+Consistency
+Same environment everywhere (no errors due to differences)
+Portability
+Run your app on any system that has Docker
+Fast Deployment
+Start containers in seconds
+Isolation
+Each app runs separately without conflicts
+Scalability
+Easily run multiple containers for large
+
+Run the following command inside the project folder (where the Dockerfile is located):
+
+```console
+ docker build -t grocerymate-app .
 ```
 
-Fill in the following information (make sure to replace the placeholders):
+Once the image is built, start a container using:
 
-```ini
-JWT_SECRET_KEY=<your_generated_key>
-POSTGRES_USER=grocery_user
-POSTGRES_PASSWORD=<your_password>
-POSTGRES_DB=grocerymate_db
-POSTGRES_HOST=localhost
-POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+```console
+ docker run -it -p 5000:5000 grocerymate-app
 ```
 
-### 🔹 Start the Application
 
-```sh
-python3 run.py
-```
+## Environmental variable 
 
-## 📖 Usage
+A .env file (environmental variables file) is used to store configuration settings and sensitive data outside your main code.
 
-- Access the application at [http://localhost:5000](http://localhost:5000)
-- Register/Login to your account
-- Browse and search for products
-- Manage favorites and shopping basket
-- Proceed through the checkout process
+Instead of hardcoding things like passwords or API keys inside your application, you put them in a .env file and load them when the app runs.
 
-## 🤝 Contributing
+A .env file is a safe place to keep important settings your application needs to run.
 
-We welcome contributions! Please follow these steps:
+The environmental variables that we are using for this project are:
 
-1. Fork the repository.
-2. Create a new feature branch (`feature/your-feature`).
-3. Implement your changes and commit them.
-4. Push your branch and create a pull request.
-
-## 📜 License
-
-This project is licensed under the MIT License.
+| Services          | Description                                                                                           |
+|-------------------|-------------------------------------------------------------------------------------------------------|
+| JWT_SECRET_KEY    | Your generated key                                                                                    |
+| POSTGRES_USER     | grocery_user |
+| POSTGRES_PASSWORD | A secure password                                                                                             
+| POSTGRES_DB       | grocerymate_db                                                                                              
+| POSTGRES_HOST     | host.docker.internal                                                                                              
+| POSTGRES_URI      | postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}                                                                                             
+| AWS_REGION        | Your prefered AWS region                                                                                              
+| S3_BUCKET_NAME    | Your Bucket Name                                                                                              
 
 
 
